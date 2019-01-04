@@ -16,3 +16,84 @@
 乍一看貌似和直接I/O读取到内存没有两样，但是有一点忽略了，虚拟内存地址以页为单位加载，在拷贝过程中，发现物理内存不够用，则会通过虚拟内存地址将暂时不用的物理页面交换到磁盘中。并非是一次性加载。
 
 另外我看了一些文章说到，从磁盘读取文件，是文件操作系统的工作，它使用read函数copy一份磁盘上的内容到内核空间的一个缓冲区，然后再将这些数据copy到用户控件，产生了2次copy行为，也就是说物理内存中会有两份数据；而mmap调用时并未进行数据拷贝，只有在真正读取时产生缺页终端处理中才会将文件直接映射到用户空间（也就是物理内存中）。
+
+
+
+# 2019/01/04  CocoaLumberjack 日志库框架学习
+
+CocoaLumberjack 日志库地址：[点击前往](https://github.com/CocoaLumberjack/CocoaLumberjack)
+
+![架构图](https://raw.githubusercontent.com/CocoaLumberjack/CocoaLumberjack/master/Documentation/CocoaLumberjackClassDiagram.png)
+
+设计思路：
+
+1. 作为一个日志库，输出日志接口不外乎两种：一、函数调用，例如`NSLog()`；二、定义一个日志管理类（通常来说是个单例），开放一个方法作为日志输出接口；另外还可以在两者基础上封装一层，比如：
+  ```oc
+  #ifdef DEBUG
+    // 实现1
+    #define DEBUG_Log(fmt, ...)     NSLog(fmt,##__VA_ARGS__)
+    // 实现2
+    #define Another_Log(fmt, ...)   [DDLog logWithFormat:(frmt), ## __VA_ARGS__]
+  #endif
+  ```
+
+2. 实现方式二，我们还可以加入日志等级，比如Error、Warinig、Info、Debug等，另外对日志输出方式可进一步控制，比如过程式同步输出，还是异步输出————不阻塞线程；但是却无法满足某些场景需求，比如我们更希望某条日志希望有多种方式的输出，这才有了后面面向接口的设计；
+3. 正如上面的UML图所示，DDLog不再作为一个日志输出工具，而是一个日志输出管理者，允许遵循`DDLogger`接口的日志对象注册进来，为此默认实现了一个 DDAbstractLogger 抽象基类，提供一些基础服务配置，而 DDTTYLogger、DDASLLogger等就是实现类，为了提高可配置型，又搞了一个 DDLogFormatter 接口，用于格式化日志信息。
+4. CocoaLumberjack 提供的调用定义如下，最终使用的为`DDLogError`和`DDLogWarn`几个宏：
+  ```c
+  #define LOG_MACRO(isAsynchronous, lvl, flg, ctx, atag, fnct, frmt, ...) \
+        [DDLog log : isAsynchronous                                     \
+             level : lvl                                                \
+              flag : flg                                                \
+           context : ctx                                                \
+              file : __FILE__                                           \
+          function : fnct                                               \
+              line : __LINE__                                           \
+               tag : atag                                               \
+            format : (frmt), ## __VA_ARGS__]
+  
+  #define LOG_MAYBE(async, lvl, flg, ctx, fnct, frmt, ...)                       \
+        do { if(lvl & flg) LOG_MACRO(async, lvl, flg, ctx, nil, fnct, frmt, ##__VA_ARGS__); } while(0)
+  
+  #define LOG_OBJC_MAYBE(async, lvl, flg, ctx, frmt, ...) \
+        LOG_MAYBE(async, lvl, flg, ctx, __PRETTY_FUNCTION__, frmt, ## __VA_ARGS__)
+  
+  #define DDLogError(frmt, ...)   LOG_OBJC_MAYBE(LOG_ASYNC_ERROR,   LOG_LEVEL_DEF, LOG_FLAG_ERROR,   0, frmt, ##__VA_ARGS__)
+  #define DDLogWarn(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_WARN,    LOG_LEVEL_DEF, LOG_FLAG_WARN,    0, frmt, ##__VA_ARGS__)
+  #define DDLogInfo(frmt, ...)    LOG_OBJC_MAYBE(LOG_ASYNC_INFO,    LOG_LEVEL_DEF, LOG_FLAG_INFO,    0, frmt, ##__VA_ARGS__)
+  #define DDLogDebug(frmt, ...)   LOG_OBJC_MAYBE(LOG_ASYNC_DEBUG,   LOG_LEVEL_DEF, LOG_FLAG_DEBUG,   0, frmt, ##__VA_ARGS__)
+  #define DDLogVerbose(frmt, ...) LOG_OBJC_MAYBE(LOG_ASYNC_VERBOSE, LOG_LEVEL_DEF, LOG_FLAG_VERBOSE, 0, frmt, ##__VA_ARGS__)
+  ```
+5. `DDLog` 内部的log实现值得借鉴学习，首先传入的信息都会被封装成一个 `DDLogMessage` 对象，这是的疑惑点是性能文件，毕竟每一次日志输出都在实例化对象，`queueLogMessage` 并非想象地直接`NSLog`打印日志信息这么简单，内部创建了一个队列`_loggingQueue`专门负责日志输出工作，每一次输出日志的操作（block代码块）都会加入到队列中等待被执行，但是某些极端情况，比如不小心陷入了巨大的循环，那么队列中被加入了大量的操作，使用gcd派发这些block代码块，可能会创建非常多的线程最终导致崩溃，因此，DDLog采用了信号量 semaphore 方法，设定了1000最大值：
+  ```oc
+  dispatch_block_t logBlock = ^{
+      dispatch_semaphore_wait(_queueSemaphore, DISPATCH_TIME_FOREVER);
+      // We're now sure we won't overflow the queue.
+      // It is time to queue our log message.
+      @autoreleasepool {
+          [self lt_log:logMessage];
+      }
+  };
+  ```
+  一旦信号量 `_queueSemaphore` 值小于等于0时会陷入等待，这样就避免了可能创建超多线程的问题
+
+6. `lt_log` 还用到了gcd的group来处理，由于我们的logger可能会是多个，所以需要遍历，然后调用每个 logger 的 `logMessage` 方法：
+
+  ```
+  for (DDLoggerNode *loggerNode in self._loggers) {
+      // skip the loggers that shouldn't write this message based on the log level
+  
+      if (!(logMessage->_flag & loggerNode->_level)) {
+          continue;
+      }
+      
+      dispatch_group_async(_loggingGroup, loggerNode->_loggerQueue, ^{ @autoreleasepool {
+          [loggerNode->_logger logMessage:logMessage];
+      } });
+  }
+  dispatch_group_wait(_loggingGroup, DISPATCH_TIME_FOREVER);
+  ```
+  这么做的好处每一条信息只有被所有logger输出过，才会进行下一条日志。
+
+
+> 总结：面向接口编程的实战项目，值得学习；另外gcd的使用，semaphore信号量，gcd group等
