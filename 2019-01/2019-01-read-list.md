@@ -97,3 +97,89 @@ CocoaLumberjack 日志库地址：[点击前往](https://github.com/CocoaLumberj
 
 
 > 总结：面向接口编程的实战项目，值得学习；另外gcd的使用，semaphore信号量，gcd group等
+
+
+
+# 2019/01/07(Universal type 和 existential type的区别)
+[Universal type 和 existential type的区别](https://stackoverflow.com/questions/292274/what-is-an-existential-type)
+
+When someone defines a universal type ∀X they're saying: You can plug in whatever type you want, I don't need to know anything about the type to do my job, I'll only refer to it opaquely as X.
+
+When someone defines an existential type ∃X they're saying: I'll use whatever type I want here; you wont know anything about the type, so you can only refer to it opaquely as X.
+
+Universal types let you write things like:
+
+```java
+void copy<T>(List<T> source, List<T> dest) {
+   ...
+}
+```
+The copy function has no idea what T will actually be, but it doesn't need to.
+
+Existential types would let you write things like:
+
+```java
+interface VirtualMachine<B> {
+   B compile(String source);
+   void run(B bytecode);
+}
+
+// Now, if you had a list of VMs you wanted to run on the same input:
+void runAllCompilers(List<∃B:VirtualMachine<B>> vms, String source) {
+   for (∃B:VirtualMachine<B> vm : vms) {
+      B bytecode = vm.compile(source);
+      vm.run(bytecode);
+   }
+}
+```
+
+Each virtual machine implementation in the list can have a different bytecode type. The runAllCompilers function has no idea what the bytecode type is, but it doesn't need to; all it does is relay the bytecode from VirtualMachine.compile to VirtualMachine.run.
+
+Java type wildcards `(ex: List<?>)` are a very limited form of existential types.
+
+> Update: Forgot to mention that you can sort of simulate existential types with universal types. First, wrap your universal type to hide the type parameter. Second, invert control (this effectively swaps the "you" and "I" part in the definitions above, which is the primary difference between existentials and universals).
+
+```java
+// A wrapper that hides the type parameter 'B'
+interface VMWrapper {
+   void unwrap(VMHandler handler);
+}
+
+// A callback (control inversion)
+interface VMHandler {
+   <B> void handle(VirtualMachine<B> vm);
+}
+```
+
+Now we can have the VMWrapper call our own VMHandler which has a universally typed handle function. The net effect is the same, our code has to treat B as opaque.
+
+```java
+void runWithAll(List<VMWrapper> vms, final String input)
+{
+   for (VMWrapper vm : vms) {
+      vm.unwrap(new VMHandler() {
+         public <B> void handle(VirtualMachine<B> vm) {
+            B bytecode = vm.compile(input);
+            vm.run(bytecode);
+         }
+      });
+   }
+}
+```
+
+An example VM implementation:
+
+
+```java
+class MyVM implements VirtualMachine<byte[]>, VMWrapper {
+   public byte[] compile(String input) {
+      return null; // TODO: somehow compile the input
+   }
+   public void run(byte[] bytecode) {
+      // TODO: Somehow evaluate 'bytecode'
+   }
+   public void unwrap(VMHandler handler) {
+      handler.handle(this);
+   }
+}
+```
