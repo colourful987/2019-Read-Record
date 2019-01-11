@@ -183,3 +183,61 @@ class MyVM implements VirtualMachine<byte[]>, VMWrapper {
    }
 }
 ```
+
+# 2019/01/12 (NSString 探究)
+
+关于编码知识：Unicode字符集、UTF8、UTF16、UTF32编码、大小端等知识点，更多可以看我的[字符集编码演变史](https://www.jianshu.com/p/9ee21d13144e)，是入门科普文，自认为还不错。
+
+为何探究NSString？我司代码中使用c++自定义了CEQString8 CEQString16等类型，可以和NSString互转，可能对c++有抵触吧，所以就没细看实现。但今日遇到某个问题需要了解下实现，在c++代码实现中发现其实也不过是编码转换，自定义类用一个char数组存储了unicode码通过utf8编码后的数据。
+
+接着我写了个Demo简单探究了下NSString的数据结构：
+
+```objective-c
+// ======================================================================================================
+// Demo 涉及到的四个 Unicode 字符
+// \u{4e00} 对应中文“一”  utf8 {e4 b8 80} utf16 {4e00}
+// \u{4f60} 对应中文“你”  utf8 {e4 bD a0} utf16 {4f60}
+// \u{0061} 对应字母“a”   utf8 {61} utf16 {0061}
+// \u{0032} 对应数字“2”   utf8 {32} utf16 {0032}
+// ======================================================================================================
+// Unicode 段划分        UTF8 编码                                有效编码位
+// 0x0 ~ 0x7F           0XXXXXXX                                    7
+// 0x80 ~ 0x7FF         110XXXXX 10XXXXXX                           11
+// 0x800 ~ 0xFFFF       1110XXXX 10XXXXXX 10XXXXXX                  16
+// 0x10000 ~ 0x10FFFF   11110XXX 10XXXXXX 10XXXXXX 10XXXXXX         21
+// =======================================================================================================
+// Unicode 段划分        UTF16 编码                                有效编码位             备注
+// 0x0 ~ 0xFFFF         XXXXXXXX XXXXXXXX                          2 字节     Unicode中去除了0xD800~0xDFFF区间
+// 0x100000 ~ 0x10FFFF  (0xD800 ~ 0xDBFF) (0xDC00 ~ 0xDFFF)        4 字节     前者高代理区 后者低代理区
+// =======================================================================================================
+// Unicode 段划分        UTF32 编码                                有效编码位             备注
+// 0x0 ~ 0x10FFFF       XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX        4 字节
+// =======================================================================================================
+NSString *string = [NSString stringWithFormat:@"一a你2"];
+NSUInteger length = string.length; // 4个
+const char *pCh_UTF8 = [string cStringUsingEncoding:NSUTF8StringEncoding];
+const char *pCh_UTF16 = [string cStringUsingEncoding:NSUTF16StringEncoding];
+const char *pCh_UTF32 = [string cStringUsingEncoding:NSUTF32StringEncoding];
+
+// length:8    capacity:10    bytes:<e4b88061 e4bda032>
+NSData *data_UTF8 = [string dataUsingEncoding:NSUTF8StringEncoding];
+// length:10   capacity:12    bytes:<fffe004e 6100604f 3200> 其中ff fe标识大小端
+NSData *data_UTF16 = [string dataUsingEncoding:NSUTF16StringEncoding];
+// length:20   capacity:25    bytes:<fffe0000 004e0000 61000000 604f0000 32000000>
+NSData *data_UTF32 = [string dataUsingEncoding:NSUTF32StringEncoding];
+```
+下面的图都是查看了内存内容，首先是`NSString`实例的内存：
+
+![](./resource/NSString存储Unicode码.png)
+
+UTF8 编码后字符指针指向的内存：
+
+![](./resource/NSString_UTF8.png)
+
+UTF16 编码后字符指针指向的内存：
+
+![](./resource/NSString_UTF16.png)
+
+UTF32 编码后字符指针指向的内存：
+
+![](./resource/NSString_UTF32.png)
