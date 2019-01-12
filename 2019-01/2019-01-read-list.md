@@ -241,3 +241,12 @@ UTF16 编码后字符指针指向的内存：
 UTF32 编码后字符指针指向的内存：
 
 ![](./resource/NSString_UTF32.png)
+
+
+
+# 2019/01/12（Flag）
+立几个 1 - 2 月份的Flag：
+
+1. 实现一个简单可用的 Markdown 编辑器(iOS/Mac App)，实现基本语法，能呈现内容；
+2. 学习SDWebImage实现原理，并非只是为了阅读源码而阅读；
+3. ReactCocoa，初探一波响应式编程，可能会打开新世界的大门，编程思想会有启发 ps:rxswift貌似也可以；
