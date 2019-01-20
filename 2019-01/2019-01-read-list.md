@@ -250,3 +250,62 @@ UTF32 编码后字符指针指向的内存：
 1. 实现一个简单可用的 Markdown 编辑器(iOS/Mac App)，实现基本语法，能呈现内容；
 2. 学习SDWebImage实现原理，并非只是为了阅读源码而阅读；
 3. ReactCocoa，初探一波响应式编程，可能会打开新世界的大门，编程思想会有启发 ps:rxswift貌似也可以；
+
+
+
+# 2019/01/20
+
+## 一、书籍阅读
+
+* 《人月神话》，管理方面；
+* 《终极算法》
+
+## 二、SwiftSyntax
+
+[GitHub 地址](https://github.com/apple/swift-syntax)
+
+讲下新事物的“学习历程”：
+### 1. 环境配置
+1. 下载 swift-syntax 库，发现不能直接玩，而是需要用 SPM(Swift Package Manager) 包管理工具来安装依赖，类似于CocoaPods;
+2. swift.org 官网了解下运行环境：Xcode 10，Swift4.2版本————这些都已具备；
+3. swift package 命令使用方法，比如如何初始化一个 SPM 工作目录，`swift package init --type executable` 等等，有点类似 `cocoapods init`;
+4. 有了初识工程，那么如何下载第三方库建立依赖？
+
+### 2. 依赖
+依赖完全靠 Package.swift 这个文件，类似 Podfile 文件。
+
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "HighlightSwiftCode",
+    dependencies: [
+        // Dependencies declare other packages that this package depends on.
+        .package(url: "https://github.com/apple/swift-syntax.git", .exact("0.40200.0")),
+    ],
+    targets: [
+        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
+        // Targets can depend on other targets in this package, and on products in packages which this package depends on.
+        .target(
+            name: "HighlightSwiftCode",
+            dependencies: ["SwiftSyntax"], path:"Sources"),
+        .testTarget(
+            name: "HighlightSwiftCodeTests",
+            dependencies: ["HighlightSwiftCode"]),
+    ]
+)
+```
+
+起初按照命令运行了，果不其然又出意外，最后发现是swift4.2版本的配置增加了！需要指定 `path` 字段————官方swift-syntax库的说明已经过时。
+
+### 3. 库怎么玩
+
+这个就比较简单了，按照NSHipster和Github库的README.md就可以了。
+
+就目前来看，swiftsyntax库其实就是语法分析器，操作生成的抽象语法树AST。
+
+温顾下解析器的工作过程，一般来说lexer生成token词法单元，然后syntax parser生成AST，接着 Semantic Analyzer 语义分析器（通常这里就是做静态分析的），生成IR中间语言，目标代码生成和优化等，不同编译器稍有差异。
+
+## 三、工具
+
+安装了 VSCode 配置了下 Swift 的 LSP，代码补全、高亮啥的都可以，但是对于导入的第三方库(#import) 不太好用，会提示没有找到库。
