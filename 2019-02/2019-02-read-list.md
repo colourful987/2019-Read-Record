@@ -1,4 +1,7 @@
+#  ![](https://flutter.dev/assets/flutter-lockup-4cb0ee072ab312e59784d9fbf4fb7ad42688a7fdaea1270ccf6bbf4f34b7e03f.svg) Theme 
+
 # 2019/02/01 - 2019/02/13
+
 断更了有段时间，简单罗列下近期做的事，看的书。
 
 * 买了块白板，主要用来罗列知识点和手撸算法，直观、容易加强记忆力；
@@ -43,3 +46,21 @@
 - [Flutter Cookbook](https://flutter.io/cookbook/)
 - [From Java to Dart](https://codelabs.developers.google.com/codelabs/from-java-to-dart/#0) codelab
 - [Bootstrap into Dart: learn more about the language](https://flutter.io/bootstrap-into-dart/)
+
+# 2019/02/26
+
+[官方教程Learning...](https://flutter.dev/docs/development/ui/layout/tutorial)
+
+* [x] [Introduction to Widgets](https://flutter.dev/docs/development/ui/widgets-intro)
+* [x] [Building layouts](https://flutter.dev/docs/development/ui/layout)
+* [ ] [Adding interactivity](https://flutter.dev/docs/development/ui/interactive)
+* [ ] [Assets and images](https://flutter.dev/docs/development/ui/assets-and-images)
+* [ ] [Navigation & routing](https://flutter.dev/docs/development/ui/navigation)
+* [ ] [Animations](https://flutter.dev/docs/development/ui/animations)
+* [ ] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
+* [ ] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
+* [ ] [Packages & plugins](https://flutter.dev/docs/development/packages-and-plugins)
+* [ ] [Tools & techniques](https://flutter.dev/docs/development/tools)
+
+预计这个星期看完基础教程，之后看下Flutter源码实现，这个Theme也算完结了。
+
