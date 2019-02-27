@@ -53,9 +53,10 @@
 
 * [x] [Introduction to Widgets](https://flutter.dev/docs/development/ui/widgets-intro)
 * [x] [Building layouts](https://flutter.dev/docs/development/ui/layout)
-* [ ] [Adding interactivity](https://flutter.dev/docs/development/ui/interactive)
-* [ ] [Assets and images](https://flutter.dev/docs/development/ui/assets-and-images)
-* [ ] [Navigation & routing](https://flutter.dev/docs/development/ui/navigation)
+* [x] [Adding interactivity](https://flutter.dev/docs/development/ui/interactive)
+* [x] [Assets and images](https://flutter.dev/docs/development/ui/assets-and-images)
+* [x] [Navigation & routing](https://flutter.dev/docs/development/ui/navigation) 
+* [ ] [Return data from a screen](https://flutter.dev/docs/cookbook/navigation/returning-data)
 * [ ] [Animations](https://flutter.dev/docs/development/ui/animations)
 * [ ] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
 * [ ] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
@@ -63,4 +64,20 @@
 * [ ] [Tools & techniques](https://flutter.dev/docs/development/tools)
 
 预计这个星期看完基础教程，之后看下Flutter源码实现，这个Theme也算完结了。
+
+
+
+# 2019/02/27
+
+学习flutter的第三天，Widget的声明定义基本熟悉，但是一直差异为啥WidgetState定义的最后要 `extends WidgetStateName<WidgetName>`，解释器会动态绑定State到Widget上？State总是维护Widget的状态，所以维护了一些Variable变量，但是State的build总是生成了对应的Widget，所以视图这块还是放在了State中，而Widget往往总是一个空的定义——当然某些状态由ParentWidget管理时，会将状态变量放到Widget中。
+
+> 总的来说，对于Flutter Widget State 分离这块设计还是一知半解，或者说为何这么设计，这么设计的优点在哪里并不是很清楚。
+
+
+
+
+
+
+
+
 
