@@ -56,16 +56,14 @@
 * [x] [Adding interactivity](https://flutter.dev/docs/development/ui/interactive)
 * [x] [Assets and images](https://flutter.dev/docs/development/ui/assets-and-images)
 * [x] [Navigation & routing](https://flutter.dev/docs/development/ui/navigation) 
-* [ ] [Return data from a screen](https://flutter.dev/docs/cookbook/navigation/returning-data)
-* [ ] [Animations](https://flutter.dev/docs/development/ui/animations)
+* [x] [Return data from a screen](https://flutter.dev/docs/cookbook/navigation/returning-data)
+* [ ] [Animations](https://flutter.dev/docs/development/ui/animations)(略过暂时)
 * [ ] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
 * [ ] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
 * [ ] [Packages & plugins](https://flutter.dev/docs/development/packages-and-plugins)
 * [ ] [Tools & techniques](https://flutter.dev/docs/development/tools)
 
 预计这个星期看完基础教程，之后看下Flutter源码实现，这个Theme也算完结了。
-
-
 
 # 2019/02/27
 
@@ -74,6 +72,10 @@
 > 总的来说，对于Flutter Widget State 分离这块设计还是一知半解，或者说为何这么设计，这么设计的优点在哪里并不是很清楚。
 
 
+
+# 2019/02/28
+
+两个页面传值学习，Animation 章节略过，应该也是用Foundation库来实现，另外搜了下关于flutter的曲线库，找到一个[google charts](https://github.com/google/charts/blob/master/charts_flutter/lib/flutter.dart) 和[mzimmerm/**flutter_charts**](https://github.com/mzimmerm/flutter_charts)
 
 
 
