@@ -58,8 +58,8 @@
 * [x] [Navigation & routing](https://flutter.dev/docs/development/ui/navigation) 
 * [x] [Return data from a screen](https://flutter.dev/docs/cookbook/navigation/returning-data)
 * [ ] [Animations](https://flutter.dev/docs/development/ui/animations)(略过暂时)
-* [ ] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
-* [ ] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
+* [x] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
+* [x] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
 * [ ] [Packages & plugins](https://flutter.dev/docs/development/packages-and-plugins)
 * [ ] [Tools & techniques](https://flutter.dev/docs/development/tools)
 
