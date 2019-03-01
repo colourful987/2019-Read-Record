@@ -60,7 +60,7 @@
 * [ ] [Animations](https://flutter.dev/docs/development/ui/animations)(略过暂时)
 * [x] [Advanced UI](https://flutter.dev/docs/development/ui/advanced)
 * [x] [Data & backend](https://flutter.dev/docs/development/data-and-backend)
-* [ ] [Packages & plugins](https://flutter.dev/docs/development/packages-and-plugins)
+* [x] [Packages & plugins](https://flutter.dev/docs/development/packages-and-plugins)
 * [ ] [Tools & techniques](https://flutter.dev/docs/development/tools)
 
 预计这个星期看完基础教程，之后看下Flutter源码实现，这个Theme也算完结了。
@@ -78,6 +78,36 @@
 两个页面传值学习，Animation 章节略过，应该也是用Foundation库来实现，另外搜了下关于flutter的曲线库，找到一个[google charts](https://github.com/google/charts/blob/master/charts_flutter/lib/flutter.dart) 和[mzimmerm/**flutter_charts**](https://github.com/mzimmerm/flutter_charts)
 
 
+
+# 2019/03/01
+
+> “一星期学上手 Flutter 实战”。😂😂😂
+
+玩笑归玩笑，五天按部就班的部署环境，看官方 tutorial 和接口码代码，所有demo我都放在了github上，目前都是官方给的教程demo。对于一些章节，如[Animations](https://flutter.dev/docs/development/ui/animations) 、[Tools & techniques](https://flutter.dev/docs/development/tools)、发布自己Package的流程我都选择了暂时略过，有需再取。
+
+下面谈谈对flutter上手体验：
+
+1. 环境部署：难度⭐️，vscode一键安装，或者Github直接下载源码，然后配下环境PATH搞定，但是在运行 `flutter docter` 命令时估计大部分会遇到问题，不过flutter给出的帮助信息还不错，缺少依赖什么的都会告诉你，解决步骤也附上用 `brew install xx...`，**目前只部署了iOS环境，安卓无需就暂时不搞了，之后补；**
+
+2. Dart 语言，此次学习并没有按部就班，先学完基础语法 《Dart Programming Language Tour》后再开始做App，主要是觉得语言这块都是相通的，一些特殊语法在使用过程中可能没接触过，此时会查询下官方文档；
+
+3. FLutter 应用程序上手，感觉嵌套到让人怀疑人生！组合，组合，组合！即使IDE提供了format以及注解region，还是觉得治标不治本；
+
+4. 编程习惯： imperative programming 和 declarative programming的区别，flutter作为后者核心可以用下图表示，state和widget，每一次state变更，都会根据状态重新渲染生成新状态下的widget，核心方法就是我们每次override的`widget build(BuildContext context){}`方法
+
+   
+
+   ![](https://flutter.dev/assets/development/data-and-backend/state-mgmt/ui-equals-function-of-state-54b01b000694caf9da439bd3f774ef22b00e92a62d3b2ade4f2e95c8555b8ca7.png)
+
+5. package manager，这点感觉和cocoapods以及swift package manager很像；
+
+6. 内存以及渲染：内存应该是会大一些的，毕竟内存存储了所有状态和widget信息，上次看到文章说还不释放Route(等同于viewController)，渲染的话目前感受不出，大家都说不错，原因是渲染那一套google自己实现的，orz…
+
+接下来是源码阅读，简单猜测下：
+
+1. Flutter SDK 内置解释器；
+2. 存储了flutter所有widget和state信息，可能还维护了几个视图树，有点类似oc中 `presentLayer *Tree*`、`modeLayer Tree`和`Render Tree`；
+3. 渲染系统基于 Quartz；
 
 
 
