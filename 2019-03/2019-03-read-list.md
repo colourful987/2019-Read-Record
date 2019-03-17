@@ -7,3 +7,12 @@
 
 
 
+# 2019/03/11 -
+
+这星期刷完了[LeetCode 的 Binary Search Tree Chapter](https://leetcode.com/explore/learn/card/introduction-to-data-structure-binary-search-tree/140/introduction-to-a-bst/)，本人非科班出生，所以算法、数据结构等没正儿八经学过，当然大学学习C语言时候，也刷过一些题目，但难度仅限medium以下吧；现在重拾算法，主要是看“码农翻身”星球里大佬们都热火朝天地刷题、读英文文献，同时也想“恶补”下基础知识，看看算法在日常开发中的应用。
+
+LeetCode 版面改动真的颇大，犹记之前就是ACM刷题的那种界面，标上 Esay/Medium/Difficult 的题目列表。
+
+对比之下，现在的主题划分更明确，内容也是先易后难，甚至章节开头还有一个 Introduction，让我对要学习的知识点有个概览，之后围绕着主题引出具体的操作，例如BST需要插入、删除、验证等操作，由浅入深，紧接着会做一些解决实际问题的题目。
+
+LeetC
