@@ -1,5 +1,3 @@
-# 【2019/04】UI Automation Test Tutorial 
-
 [TOC]
 
 ## 1. 环境部署
@@ -58,6 +56,8 @@ Successfully installed Appium-Python-Client-0.40 selenium-3.141.0
 
 ```shell
 pip install -U pytest
+# or
+pip3 ...
 ```
 
 <details>
@@ -84,6 +84,14 @@ Installing collected packages: py, atomicwrites, six, pluggy, attrs, more-iterto
 Successfully installed atomicwrites-1.3.0 attrs-19.1.0 more-itertools-7.0.0 pluggy-0.9.0 py-1.8.0 pytest-4.4.0 six-1.12.0
   ```
 </details>
+pytest 日志输出格式也有多种： xml、txt 和 html，显然xml适合数据分析，而html则是直观显示，但是后者需要安装插件
+
+```shell
+pip3 install pytest-html
+```
+
+
+
 安装 Carthage 为了唤起 WebDriveAgent ?
 
 ```shell
@@ -193,6 +201,14 @@ pmst:final pmst$ appium
 [Appium] Appium REST http interface listener started on 0.0.0.0:4723
 ```
 
+或者为了让其在后台运行可以这么干：
+
+```shell
+pmst:final pmst$ nohup appium &
+```
+
+
+
 二、使用 `pytest` 运行脚本
 
 ```shell
@@ -200,3 +216,16 @@ pytest test_login.py
 ```
 
 测试结果很顺利，所有以 `test` 前缀的都会作为一个case跑一遍，因此上面要跑三个case；另外键盘的输入使用 ` emailTF.send_keys` 方式，尝试改为中文，发现弹出的英文键盘也没关系，依然神速般填充了内容。
+
+日志输出：
+
+```shell
+pytest -v test_login.py --junitxml=report/report.xml
+
+# or
+pytest -v test_login.py --html=report/report.html
+```
+
+html格式输出测试报告相当不错！
+
+![](./resource/pytest-report-html.png)
