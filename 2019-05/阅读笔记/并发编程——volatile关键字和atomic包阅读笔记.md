@@ -229,3 +229,5 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 
 
 
+> 当然朦胧觉得似乎还没理解，钻牛角尖的话就是如果同时两个线程并发执行上面的代码，是不是就不成立？得自己思考下。
+
